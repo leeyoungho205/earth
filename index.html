@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js 3D 지구본</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        canvas { display: block; }
+        /* 버튼 기본 스타일 (선택 사항) */
+        #ui-container button {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #ui-container button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js 라이브러리 및 OrbitControls 추가 (CDN 사용) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- 메인 애플리케이션 스크립트 -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { initGlobe, animate } from './globe.js'; // globe.js 에서 함수 가져오기
+        import { initUI } from './ui.js'; // ui.js 에서 함수 가져오기
+
+        // 지구본 초기화
+        const { scene, camera, renderer, earthMesh, controls, cleanup } = initGlobe();
+
+        // UI 초기화 (지구본 초기화 후 호출)
+        initUI(scene, earthMesh);
+
+        // 애니메이션 루프 시작
+        animate(scene, camera, renderer, controls);
+
+        // 페이지 언로드 시 정리
+        window.addEventListener('beforeunload', () => {
+            cleanup();
+        });
+    </script>
+</body>
+</html>

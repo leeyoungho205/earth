@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South Korea"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [126.0, 37.5],
+              [126.5, 37.5],
+              [126.5, 38.0],
+              [126.0, 38.0],
+              [126.0, 37.5]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+} 

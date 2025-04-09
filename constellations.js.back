@@ -1,0 +1,92 @@
+import * as THREE from 'three';
+
+class Constellation {
+    constructor(scene) {
+        this.scene = scene;
+        this.stars = [];
+        this.lines = [];
+        this.currentConstellation = null;
+    }
+
+    setCenter(position) {
+        this.center.copy(position);
+        // 중심점을 약간 내부로 이동
+        const normal = position.clone().normalize();
+        this.center.add(normal.multiplyScalar(-0.05));
+    }
+
+    createConstellation(constellationName) {
+        this.clearConstellation();
+        
+        const constellation = window.constellationData[constellationName];
+        if (!constellation) return;
+
+        this.currentConstellation = constellation;
+
+        // 별 생성
+        constellation.stars.forEach(star => {
+            const starGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+            const starMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.8
+            });
+            const starMesh = new THREE.Mesh(starGeometry, starMaterial);
+            
+            // 적경과 적위를 3D 좌표로 변환
+            const ra = star.ra * Math.PI / 12; // 시간을 라디안으로 변환
+            const dec = star.dec * Math.PI / 180; // 도를 라디안으로 변환
+            const distance = 10; // 별까지의 거리
+            
+            starMesh.position.set(
+                distance * Math.cos(dec) * Math.cos(ra),
+                distance * Math.sin(dec),
+                distance * Math.cos(dec) * Math.sin(ra)
+            );
+            
+            this.scene.add(starMesh);
+            this.stars.push(starMesh);
+        });
+
+        // 연결선 생성
+        constellation.lines.forEach(line => {
+            const startStar = this.stars[line[0]];
+            const endStar = this.stars[line[1]];
+            
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                startStar.position,
+                endStar.position
+            ]);
+            
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.5
+            });
+            
+            const constellationLine = new THREE.Line(lineGeometry, lineMaterial);
+            this.scene.add(constellationLine);
+            this.lines.push(constellationLine);
+        });
+    }
+
+    clearConstellation() {
+        this.stars.forEach(star => this.scene.remove(star));
+        this.lines.forEach(line => this.scene.remove(line));
+        this.stars = [];
+        this.lines = [];
+        this.currentConstellation = null;
+    }
+
+    show() {
+        this.createConstellation(this.currentConstellation.name);
+        this.visible = true;
+    }
+
+    hide() {
+        this.clearConstellation();
+        this.visible = false;
+    }
+}
+
+export { Constellation }; 
